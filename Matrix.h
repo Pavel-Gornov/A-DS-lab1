@@ -1,7 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-template<typename T>
+template <typename T>
 class Matrix {
 public:
     Matrix();
@@ -19,24 +19,23 @@ public:
     T& operator()(size_t n, size_t m);
     const T& operator()(size_t n, size_t m) const;
 
-    // Matrix operator+(const Matrix& other) const;
-    // Matrix& operator+=(const Matrix& other);
+    bool operator==(const Matrix<T>& other);
 
-    // Matrix operator-(const Matrix& other) const;
-    // Matrix& operator-=(const Matrix& other);
+    Matrix<T>& operator+=(const Matrix<T>& other);
 
-    // Matrix operator*(const Matrix& other) const;
-    // Matrix& operator*=(const Matrix& other);
+    Matrix<T>& operator-=(const Matrix<T>& other);
 
-    // Matrix operator*(T scalar) const;
-    // Matrix& operator*=(T scalar);
+    Matrix<T>& operator*=(const Matrix<T>& other);
 
-    // T trace() const;
+    Matrix<T>& operator*=(T scalar);
+    Matrix<T>& operator/=(T scalar);
+
+    T trace() const;
 
     // T determinant() const;
 
 private:
-    void allocate_();
+    void allocate_();//Matrix<T> operator+(const Matrix<T>& other) const;
     void destroy_();
     void copy_data_(const Matrix& m);
 
@@ -44,5 +43,35 @@ private:
     size_t rows_;
     size_t columns_;
 };
+
+template <typename T>
+Matrix<T> operator*(const Matrix<T>& m,  T scalar) {
+    return Matrix<T>(m) *= scalar;
+}
+
+template <typename T>
+Matrix<T> operator*(T scalar, const Matrix<T>& m) {
+    return Matrix<T>(m) *= scalar;
+}
+
+template <typename T>
+Matrix<T> operator/(const Matrix<T>& m,  T scalar) {
+    return Matrix<T>(m) /= scalar;
+}
+
+template <typename T>
+Matrix<T> operator+(const Matrix<T>& m1, const Matrix<T>& m2) {
+    return Matrix<T>(m1) += m2;
+}
+
+template <typename T>
+Matrix<T> operator-(const Matrix<T>& m1, const Matrix<T>& m2) {
+    return Matrix<T>(m1) += m2;
+}
+
+template <typename T>
+Matrix<T> operator*(const Matrix<T>& m1, const Matrix<T>& m2) {
+    return Matrix<T>(m1) *= m2;
+}
 
 #endif // MATRIX_H

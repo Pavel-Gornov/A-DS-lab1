@@ -1,10 +1,11 @@
 #include "Matrix.h"
 #include <complex>
 #include <random>
+#include <iostream>
 
 
-template<typename T>
-Matrix<T>::Matrix(): rows_(1), columns_(1) { this->allocate_(); }
+template <typename T>
+Matrix<T>::Matrix(): rows_(), columns_() { this->allocate_(); }
 
 template <typename T>
 Matrix<T>::Matrix(size_t n): rows_(n), columns_(n) { this->allocate_(); }
@@ -40,9 +41,7 @@ Matrix<T>& Matrix<T>::operator=(const Matrix<T>& m) {
             this->columns_ = m.columns_;
             this->allocate_();
         }
-        else {
-            copy_data_(m);
-        }
+        copy_data_(m);
     }
     return *this;
 }
@@ -62,10 +61,99 @@ const T& Matrix<T>::operator()(size_t n, size_t m) const {
     return this->data_[n - 1][m - 1];
 }
 
+template <typename T>
+bool Matrix<T>::operator==(const Matrix<T> &other) {
+    if (rows_ != rows_ || columns_ != columns_) { 
+        return false; 
+    }
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < rows_; j++) {
+            if (data_[i][j] != other.data_[i][j]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 template <typename T>
-void Matrix<T>::allocate_()
-{
+Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
+    if (rows_ != other.rows_ || columns_ != other.columns_) {
+        throw std::logic_error("Матрицы разных размеров");
+    }
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < columns_; j++) {
+            data_[i][j] += other.data_[i][j];
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &other) {
+    if (rows_ != other.rows_ || columns_ != other.columns_) {
+        throw std::logic_error("Матрицы разных размеров");
+    }
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < columns_; j++) {
+            data_[i][j] -= other.data_[i][j];
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator*=(const Matrix<T> &other) {
+    if (columns_ != other.rows_) {
+        throw std::logic_error("Матрицы не совместны");
+    }
+    Matrix<T> res(rows_, other.columns_);
+    
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < other.columns_; j++) {
+            for (size_t r = 0; r < columns_; r++) {
+                res.data_[i][j] += data_[i][r] * other.data_[r][j];
+            }
+        }
+    }
+    *this = res;
+    return *this;
+}
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator*=(T scalar) {
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < columns_; j++) {
+            data_[i][j] *= scalar;
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Matrix<T> &Matrix<T>::operator/=(T scalar) {
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < columns_; j++) {
+            data_[i][j] /= scalar;
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+T Matrix<T>::trace() const {
+    if (rows_ != columns_) {
+        throw std::logic_error("Матрица не является квадратной");
+    }
+    T sum = T();
+    for (size_t i = 0; i < rows_; i++) {
+        sum += data_[i][i];
+    }
+    return sum;
+}
+
+template <typename T>
+void Matrix<T>::allocate_() {
     this->data_ = new T*[rows_];
     for (size_t i = 0; i < rows_; i++) {
         this->data_[i] = new T[columns_];
