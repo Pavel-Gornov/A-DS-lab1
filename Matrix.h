@@ -9,33 +9,40 @@ public:
     Matrix(size_t n, size_t m);
     Matrix(size_t n, size_t m, T rand_min, T rand_max);
 
-    Matrix(const Matrix& m)
-    Matrix& operator=(const Matrix& m);
+    size_t get_rows() const;
+    size_t get_columns() const;
+
+    Matrix(const Matrix& m);
+    Matrix<T>& operator=(const Matrix<T>& m);
     ~Matrix();
 
     T& operator()(size_t n, size_t m);
     const T& operator()(size_t n, size_t m) const;
 
-    Matrix operator+(const Matrix& other) const;
-    Matrix& operator+=(const Matrix& other);
+    // Matrix operator+(const Matrix& other) const;
+    // Matrix& operator+=(const Matrix& other);
 
-    Matrix operator-(const Matrix& other) const;
-    Matrix& operator-=(const Matrix& other);
+    // Matrix operator-(const Matrix& other) const;
+    // Matrix& operator-=(const Matrix& other);
 
-    Matrix operator*(const Matrix& other) const;
-    Matrix& operator*=(const Matrix& other);
+    // Matrix operator*(const Matrix& other) const;
+    // Matrix& operator*=(const Matrix& other);
 
-    Matrix operator*(T scalar) const;
-    Matrix& operator*=(T scalar);
+    // Matrix operator*(T scalar) const;
+    // Matrix& operator*=(T scalar);
 
-    T trace() const;
+    // T trace() const;
 
-    //T determinant() const;
+    // T determinant() const;
 
 private:
-    T** data_;
-    size_t n_;
-    size_t m_;
+    void allocate_();
+    void destroy_();
+    void copy_data_(const Matrix& m);
+
+    T** data_ = nullptr;
+    size_t rows_;
+    size_t columns_;
 };
 
 #endif // MATRIX_H

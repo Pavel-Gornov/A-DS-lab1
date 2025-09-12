@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(EXECUTABLE ${PROJECT_NAME})
 
-add_executable(${EXECUTABLE} main.cpp)
+add_executable(${EXECUTABLE} main.cpp Matrix.cpp)
 
 # Настройки компиляторов для лабораторных работ \/
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
