@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Matrix.h"
+#include <complex>
 
 template <typename T>
 void print_matrix(const Matrix<T>& m) {
@@ -12,14 +13,21 @@ void print_matrix(const Matrix<T>& m) {
 }
 
 int main() {
-    Matrix<int> m1 = Matrix<int>(2, 2);
-    m1(1, 1) = 1; m1(1, 2) = 2;
-    m1(2, 1) = 3; m1(2, 2) = 4;
+    Matrix<int> m1 = Matrix<int>(3, 3, 0, 1);
 
-    Matrix<int> m2 = Matrix<int>(2, 2);
-    m2(1, 1) = 1; m2(1, 2) = 1;
-    m2(2, 1) = 1; m2(2, 2) = 1;
-    
+    Matrix<int> m2 = Matrix<int>(3, 3, 0, 1);
+
     print_matrix(m1 * m2);
     print_matrix(m2 * m1);
+
+    Matrix<double> md1 = Matrix<double>(1, 1);
+    md1(1, 1) = 1;
+
+    Matrix<double> md2 = Matrix<double>(1, 1);
+    md2(1, 1) = 0.9999;
+
+    print_matrix(md1);
+    print_matrix(md2);
+    std::cout << (md1 == md2);
+
 }

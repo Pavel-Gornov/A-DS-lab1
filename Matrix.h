@@ -1,5 +1,6 @@
 #ifndef MATRIX_H
 #define MATRIX_H
+#include <random>
 
 template <typename T>
 class Matrix {
@@ -19,7 +20,7 @@ public:
     T& operator()(size_t n, size_t m);
     const T& operator()(size_t n, size_t m) const;
 
-    bool operator==(const Matrix<T>& other);
+    bool operator==(const Matrix<T>& other) const;
 
     Matrix<T>& operator+=(const Matrix<T>& other);
 
@@ -35,14 +36,26 @@ public:
     // T determinant() const;
 
 private:
-    void allocate_();//Matrix<T> operator+(const Matrix<T>& other) const;
+    void allocate_();
     void destroy_();
     void copy_data_(const Matrix& m);
+
+    T random_(T min, T max) const;
+    bool is_equal_(T a, T b) const;
+
+    inline static std::random_device rd_;
+    inline static std::mt19937 random_int_ = std::mt19937(rd_());
+    inline static const double EPSILON_ = 0.0001; // Константа для сравнения чисел с плавающей точкой
 
     T** data_ = nullptr;
     size_t rows_;
     size_t columns_;
 };
+
+template <typename T>
+bool operator==(const Matrix<T>& a,  const Matrix<T>& b) {
+    return a.operator==(b);
+}
 
 template <typename T>
 Matrix<T> operator*(const Matrix<T>& m,  T scalar) {

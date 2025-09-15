@@ -1,11 +1,10 @@
 #include "Matrix.h"
 #include <complex>
-#include <random>
 #include <iostream>
 
 
 template <typename T>
-Matrix<T>::Matrix(): rows_(), columns_() { this->allocate_(); }
+Matrix<T>::Matrix(): rows_(), columns_() {}
 
 template <typename T>
 Matrix<T>::Matrix(size_t n): rows_(n), columns_(n) { this->allocate_(); }
@@ -21,7 +20,15 @@ size_t Matrix<T>::get_columns() const { return columns_; }
 
 template <typename T>
 Matrix<T>::Matrix(size_t n, size_t m, T rand_min, T rand_max): rows_(n), columns_(m) {
-    this->allocate_(); // TODO: Реализовать заполнение случайными значениями
+    // if (rand_min > rand_max) {
+    //     throw std::logic_error("Минимальный элемент должен быть меньше максимального");
+    // }
+    this->allocate_();
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < rows_; j++) {
+            data_[i][j] = random_(rand_min, rand_max);
+        }
+    }
 }
 
 template <typename T>
@@ -62,13 +69,13 @@ const T& Matrix<T>::operator()(size_t n, size_t m) const {
 }
 
 template <typename T>
-bool Matrix<T>::operator==(const Matrix<T> &other) {
+bool Matrix<T>::operator==(const Matrix<T> &other) const {
     if (rows_ != rows_ || columns_ != columns_) { 
         return false; 
     }
     for (size_t i = 0; i < rows_; i++) {
         for (size_t j = 0; j < rows_; j++) {
-            if (data_[i][j] != other.data_[i][j]) {
+            if (!is_equal_(data_[i][j], other.data_[i][j])) {
                 return false;
             }
         }
@@ -178,6 +185,69 @@ void Matrix<T>::copy_data_(const Matrix& m) {
             this->data_[i][j] = m.data_[i][j];
         }
     }
+}
+
+template <typename T>
+bool Matrix<T>::is_equal_(T a, T b) const {
+    return a == b;
+}
+
+template <>
+bool Matrix<float>::is_equal_(float a, float b) const {
+    return (a > b? (a - b): (b - a)) < EPSILON_;
+}
+
+template <>
+bool Matrix<double>::is_equal_(double a, double b) const {
+    return (a > b? (a - b): (b - a)) < EPSILON_;
+}
+
+template <>
+bool Matrix<std::complex<float>>::is_equal_(std::complex<float> a, std::complex<float> b) const {
+    std::complex<float> dif = (a - b);
+    return std::abs(dif) < EPSILON_;
+}
+
+template <>
+bool Matrix<std::complex<double>>::is_equal_(std::complex<double> a, std::complex<double> b) const {
+    std::complex<double> dif = (a - b);
+    return std::abs(dif) < EPSILON_;
+}
+
+template <typename T>
+T Matrix<T>::random_(T min, T max) const {
+    return T(); // Нет общей реализации
+}
+
+template <>
+int Matrix<int>::random_(int min, int max) const {
+    return (random_int_() % (max + 1)) + min;
+}
+
+template <>
+float Matrix<float>::random_(float min, float max) const {
+    std::uniform_real_distribution<float> dist(min, max);
+    return dist(random_int_);
+}
+
+template <>
+double Matrix<double>::random_(double min, double max) const {
+    std::uniform_real_distribution<double> dist(min, max);
+    return dist(random_int_);
+}
+
+template <>
+std::complex<float> Matrix<std::complex<float>>::random_(std::complex<float> min, std::complex<float> max) const {
+    std::uniform_real_distribution<float> real_dist(min.real(), max.real());
+    std::uniform_real_distribution<float> imag_dist(min.imag(), max.imag());
+    return std::complex<float>(real_dist(random_int_), imag_dist(random_int_));
+}
+
+template <>
+std::complex<double> Matrix<std::complex<double>>::random_(std::complex<double> min, std::complex<double> max) const {
+    std::uniform_real_distribution<double> real_dist(min.real(), max.real());
+    std::uniform_real_distribution<double> imag_dist(min.imag(), max.imag());
+    return std::complex<double>(real_dist(random_int_), imag_dist(random_int_));
 }
 
 // т.к. реализация вынесена в отдельный файл, то компиляция происходит для этих типов заранее
