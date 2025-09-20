@@ -13,21 +13,15 @@ void print_matrix(const Matrix<T>& m) {
 }
 
 int main() {
-    Matrix<int> m1 = Matrix<int>(3, 3, 0, 1);
+    Matrix<int> m(2, 2, {1, 2, 3, 4});
 
-    Matrix<int> m2 = Matrix<int>(3, 3, 0, 1);
+    print_matrix(m);
+    std::cout << m.determinant() << "\n\n";
 
-    print_matrix(m1 * m2);
-    print_matrix(m2 * m1);
-
-    Matrix<double> md1 = Matrix<double>(1, 1);
-    md1(1, 1) = 1;
-
-    Matrix<double> md2 = Matrix<double>(1, 1);
-    md2(1, 1) = 0.9999;
-
-    print_matrix(md1);
-    print_matrix(md2);
-    std::cout << (md1 == md2);
-
+    Matrix<std::complex<double>> mi(3, 3);
+    mi(1, 1) = 1; mi(1, 2) = 6; mi(2, 1) = 7;
+    mi(3, 3) = std::complex<double>(0, 1);
+    mi(2, 2) = std::complex<double>(0, 1);
+    print_matrix(mi);
+    std::cout << mi.determinant();
 }

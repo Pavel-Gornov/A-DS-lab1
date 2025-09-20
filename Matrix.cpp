@@ -32,6 +32,18 @@ Matrix<T>::Matrix(size_t n, size_t m, T rand_min, T rand_max): rows_(n), columns
 }
 
 template <typename T>
+Matrix<T>::Matrix(size_t n, size_t m, const std::vector<T>& arr) {
+    rows_ = n;
+    columns_ = m;
+    this->allocate_();
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = 0; j < rows_; j++) {
+            data_[i][j] = arr[(i * n) + j];
+        }
+    }
+}
+
+template <typename T>
 Matrix<T>::Matrix(const Matrix& m) {
     this->rows_ = m.rows_;
     this->columns_ = m.columns_;
@@ -160,6 +172,40 @@ T Matrix<T>::trace() const {
 }
 
 template <typename T>
+T Matrix<T>::determinant() const {
+    if (rows_ != columns_) {
+        throw std::logic_error("Матрица не является квадратной");
+    }
+    // Рекурсивное вычисление определителя через миноры матрицы
+    if (rows_ == 0) return 1;
+    if (rows_ == 1) return data_[0][0];
+    if (rows_ == 2) return data_[0][0] * data_[1][1] - data_[0][1] * data_[1][0];
+
+    T result = T();
+
+    for (size_t v = 0; v < rows_; v++) {
+
+        Matrix<T> m = Matrix(rows_- 1, columns_ - 1);
+
+         for (size_t i = 1; i < rows_; i++) {
+            size_t z = 0;
+            for (size_t j = 0; j < columns_; j++) {
+                if (j != v) {
+                    m.data_[i-1][z] = data_[i][j];
+                    z++;
+                }
+            }
+        }
+        if (v % 2 == 0)
+            result += (data_[0][v] * m.determinant());
+        else
+            result += (-data_[0][v] * m.determinant());
+    }
+
+    return result;
+}
+
+template <typename T>
 void Matrix<T>::allocate_() {
     this->data_ = new T*[rows_];
     for (size_t i = 0; i < rows_; i++) {
@@ -173,9 +219,9 @@ void Matrix<T>::allocate_() {
 template <typename T>
 void Matrix<T>::destroy_() {
     for (size_t i = 0; i < rows_; i++) {
-        delete data_[i];
+        delete[] data_[i];
     }
-    delete data_;
+    delete[] data_;
 }
 
 template <typename T>

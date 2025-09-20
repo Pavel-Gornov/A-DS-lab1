@@ -9,6 +9,7 @@ public:
     Matrix(size_t n);
     Matrix(size_t n, size_t m);
     Matrix(size_t n, size_t m, T rand_min, T rand_max);
+    Matrix(size_t n, size_t m, const std::vector<T>& arr);
 
     size_t get_rows() const;
     size_t get_columns() const;
@@ -33,7 +34,7 @@ public:
 
     T trace() const;
 
-    // T determinant() const;
+    T determinant() const;
 
 private:
     void allocate_();
