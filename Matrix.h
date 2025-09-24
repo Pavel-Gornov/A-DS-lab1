@@ -1,6 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 #include <random>
+#include <ostream>
 
 template <typename T>
 class Matrix {
@@ -19,7 +20,7 @@ public:
     ~Matrix();
 
     T& operator()(size_t n, size_t m);
-    const T& operator()(size_t n, size_t m) const;
+    T operator()(size_t n, size_t m) const;
 
     bool operator==(const Matrix<T>& other) const;
 
@@ -36,6 +37,10 @@ public:
 
     T determinant() const;
 
+    void transpose();
+
+    Matrix<T> get_transposed() const;
+
 private:
     void allocate_();
     void destroy_();
@@ -43,6 +48,7 @@ private:
 
     T random_(T min, T max) const;
     bool is_equal_(T a, T b) const;
+    bool is_greaterq_(T a, T b) const;
 
     inline static std::random_device rd_;
     inline static std::mt19937 random_int_ = std::mt19937(rd_());
@@ -55,7 +61,7 @@ private:
 
 template <typename T>
 bool operator==(const Matrix<T>& a,  const Matrix<T>& b) {
-    return a.operator==(b);
+    return a==(b);
 }
 
 template <typename T>
@@ -86,6 +92,17 @@ Matrix<T> operator-(const Matrix<T>& m1, const Matrix<T>& m2) {
 template <typename T>
 Matrix<T> operator*(const Matrix<T>& m1, const Matrix<T>& m2) {
     return Matrix<T>(m1) *= m2;
+}
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const Matrix<T>& m) {
+    for (size_t i = 0; i < m.get_rows(); i++) {
+        for (size_t j = 0; j < m.get_columns(); j++) {
+            os << m(i+1, j+1) << " ";
+        }
+        os << "\n";
+    }
+    return os;
 }
 
 #endif // MATRIX_H

@@ -3,25 +3,47 @@
 #include <complex>
 
 template <typename T>
-void print_matrix(const Matrix<T>& m) {
+Matrix<T> inversed(const Matrix<T>& m) {
+    Matrix<T> A1(m.get_rows(), m.get_columns());
+    T det = m.determinant();
+
     for (size_t i = 0; i < m.get_rows(); i++) {
-        for (size_t j = 0; j < m.get_columns(); j++) {
-            std::cout << m(i + 1, j + 1) << " ";
+        for (size_t j = 0; j < m.get_rows(); j++) {
+            Matrix<T> a(m.get_rows()-1, m.get_columns()-1);
+            size_t x = 0;
+            size_t y = 0;
+
+            for (size_t k = 0; k < m.get_rows(); k++) {
+                for (size_t l = 0; l < m.get_rows(); l++) {
+                    if (k != i && l != j) {
+                        a(y+1, x+1) = m(k+1, l+1);
+                        if (x == a.get_rows() - 1) {
+                            x = 0;
+                            y++;
+                        }
+                        else
+                            x++;
+                    }
+                }
+            }
+            if ((i + j) % 2 == 0) {
+                A1(i + 1, j + 1) = a.determinant();
+            }
+            else {
+                A1(i + 1, j + 1) = -a.determinant();
+            }
         }
-        std::cout << "\n";
     }
+    A1.transpose();
+    Matrix<T> res = ((1/det) * A1);
+    return res;
 }
 
 int main() {
-    Matrix<int> m(2, 2, {1, 2, 3, 4});
-
-    print_matrix(m);
-    std::cout << m.determinant() << "\n\n";
-
-    Matrix<std::complex<double>> mi(3, 3);
-    mi(1, 1) = 1; mi(1, 2) = 6; mi(2, 1) = 7;
-    mi(3, 3) = std::complex<double>(0, 1);
-    mi(2, 2) = std::complex<double>(0, 1);
-    print_matrix(mi);
-    std::cout << mi.determinant();
+    Matrix<double> m1(3, 3, 
+        {1, 2, 0,
+         1, 0, 3,
+         1, 4, 0});
+    Matrix<double> im1 = inversed(m1);
+    std::cout << im1 * m1 << "\n";
 }

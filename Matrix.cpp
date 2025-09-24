@@ -20,9 +20,9 @@ size_t Matrix<T>::get_columns() const { return columns_; }
 
 template <typename T>
 Matrix<T>::Matrix(size_t n, size_t m, T rand_min, T rand_max): rows_(n), columns_(m) {
-    // if (rand_min > rand_max) {
-    //     throw std::logic_error("Минимальный элемент должен быть меньше максимального");
-    // }
+    if (!is_greaterq_(rand_max, rand_min)) { 
+        throw std::logic_error("Минимальный элемент должен быть меньше максимального");
+    }
     this->allocate_();
     for (size_t i = 0; i < rows_; i++) {
         for (size_t j = 0; j < rows_; j++) {
@@ -76,7 +76,7 @@ T& Matrix<T>::operator()(size_t n, size_t m) {
 }
 
 template <typename T>
-const T& Matrix<T>::operator()(size_t n, size_t m) const {
+T Matrix<T>::operator()(size_t n, size_t m) const {
     return this->data_[n - 1][m - 1];
 }
 
@@ -187,7 +187,7 @@ T Matrix<T>::determinant() const {
 
         Matrix<T> m = Matrix(rows_- 1, columns_ - 1);
 
-         for (size_t i = 1; i < rows_; i++) {
+        for (size_t i = 1; i < rows_; i++) {
             size_t z = 0;
             for (size_t j = 0; j < columns_; j++) {
                 if (j != v) {
@@ -203,6 +203,25 @@ T Matrix<T>::determinant() const {
     }
 
     return result;
+}
+
+template <typename T>
+void Matrix<T>::transpose() {
+    T temp = T();
+    for (size_t i = 0; i < rows_; i++) {
+        for (size_t j = i; j < columns_; j++) {
+            temp = data_[i][j];
+            data_[i][j] = data_[j][i];
+            data_[j][i] = temp;
+        }
+    }
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::get_transposed() const {
+    Matrix<T> m(*this);
+    m.transpose();
+    return m;
 }
 
 template <typename T>
@@ -236,6 +255,21 @@ void Matrix<T>::copy_data_(const Matrix& m) {
 template <typename T>
 bool Matrix<T>::is_equal_(T a, T b) const {
     return a == b;
+}
+
+template <typename T>
+bool Matrix<T>::is_greaterq_(T a, T b) const {
+    return a >= b;
+}
+
+template <>
+bool Matrix<std::complex<float>>::is_greaterq_(std::complex<float> a, std::complex<float> b) const {
+    return a.real() >= b.real() && a.imag() >= b.imag();
+}
+
+template <>
+bool Matrix<std::complex<double>>::is_greaterq_(std::complex<double> a, std::complex<double> b) const {
+    return a.real() >= b.real() && a.imag() >= b.imag();
 }
 
 template <>
